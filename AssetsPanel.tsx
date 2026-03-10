@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ContentAssets } from '@/app/types';
+import type { ContentAssets } from '@/types';
 import CopyButton from './CopyButton';
 
 interface AssetsPanelProps {
