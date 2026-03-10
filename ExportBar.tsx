@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { ProcessResult } from '@/types';
+import { ProcessResult } from '@/app/types';
 
 interface ExportBarProps {
   data: ProcessResult;
@@ -24,7 +24,7 @@ export default function ExportBar({ data }: ExportBarProps) {
       if (!response.ok) throw new Error('Export failed');
 
       const blob = await response.blob();
-      const filename = data.metadata.title.replace(/[^a-z0-9]/gi, '_').slice(0, 60);
+      const filename = (data?.metadata?.title ?? 'Untitled') .toString() .trim() .replace(/[^a-z0-9]+/gi, '_') .replace(/^_+|_+$/g, '') .slice(0, 60);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
