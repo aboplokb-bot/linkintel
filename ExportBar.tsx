@@ -24,7 +24,12 @@ export default function ExportBar({ data }: ExportBarProps) {
       if (!response.ok) throw new Error('Export failed');
 
       const blob = await response.blob();
-      const filename = (data?.metadata?.title ?? 'Untitled') .toString() .trim() .replace(/[^a-z0-9]+/gi, '_') .replace(/^_+|_+$/g, '') .slice(0, 60);
+      const filename = (data?.metadata?.title ?? 'Untitled')
+  .toString()
+  .trim()
+  .replace(/[^a-z0-9]+/gi, '_')
+  .replace(/^_+|_+$/g, '')
+  .slice(0, 60);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
