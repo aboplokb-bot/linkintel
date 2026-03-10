@@ -13,3 +13,9 @@ export interface ContentAssets {
     fullScript: string;
   };
 }
+
+export interface ProcessResult {
+  transcript: string;
+  summary: string;
+  assets: ContentAssets;
+}
