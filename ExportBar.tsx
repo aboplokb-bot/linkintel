@@ -13,7 +13,6 @@ export default function ExportBar({ data }: ExportBarProps) {
   const [exporting, setExporting] = useState<ExportFormat | null>(null);
 
   const handleExport = async (format: ExportFormat) => {
-    setExporting(format);
     try {
       const response = await fetch('/api/export', {
         method: 'POST',
