@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 // STRATEGIC FIX: Replaced fragile path alias (@/app/types) with bulletproof relative path.
-import { ContentAssets } from '../types'; 
+import { ContentAssets } from './types'; 
 import CopyButton from './CopyButton';
 
 interface AssetsPanelProps {
