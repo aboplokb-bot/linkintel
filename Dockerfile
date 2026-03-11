@@ -19,7 +19,7 @@ WORKDIR /app
 
 # Install Node dependencies
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm intasll --omit=dev
 
 # Copy source
 COPY . .
