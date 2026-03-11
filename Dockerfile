@@ -22,14 +22,21 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV TEMP_DIR=/tmp
 
+# Prevent interactive prompts during apt installs (Railway build has no TTY)
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
 # Install system dependencies, FFmpeg, and Node.js 20
-RUN apt-get update && apt-get install -y \
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
     ffmpeg \
     curl \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    ca-certificates \
+    tzdata \
+  && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+  && apt-get install -y --no-install-recommends nodejs \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 # Install yt-dlp without caching to save space
 RUN pip install --no-cache-dir yt-dlp
