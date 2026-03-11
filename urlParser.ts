@@ -1,8 +1,3 @@
-// ============================================================
-// LINKINTEL — URL Parser Module
-// Detects platform, validates, extracts video IDs
-// ============================================================
-
 import { ParsedURL, SupportedPlatform } from '@/app/types';
 
 const YOUTUBE_PATTERNS = [
@@ -22,7 +17,6 @@ export function parseMediaURL(rawUrl: string): ParsedURL {
     return { platform: 'unknown', originalUrl: url, isSupported: false, error: 'Please enter a URL.' };
   }
 
-  // Basic URL format check
   let parsed: URL;
   try {
     parsed = new URL(url);
@@ -34,7 +28,6 @@ export function parseMediaURL(rawUrl: string): ParsedURL {
     return { platform: 'unknown', originalUrl: url, isSupported: false, error: 'Only HTTP/HTTPS URLs are supported.' };
   }
 
-  // YouTube detection
   for (const pattern of YOUTUBE_PATTERNS) {
     const match = url.match(pattern);
     if (match) {
@@ -42,24 +35,20 @@ export function parseMediaURL(rawUrl: string): ParsedURL {
     }
   }
 
-  // Loom detection
   const loomMatch = url.match(LOOM_PATTERN);
   if (loomMatch) {
     return { platform: 'loom', originalUrl: url, videoId: loomMatch[1], isSupported: true };
   }
 
-  // Vimeo detection
   const vimeoMatch = url.match(VIMEO_PATTERN);
   if (vimeoMatch) {
     return { platform: 'vimeo', originalUrl: url, videoId: vimeoMatch[1], isSupported: true };
   }
 
-  // Direct MP4/video URL
   if (MP4_PATTERN.test(parsed.pathname)) {
     return { platform: 'mp4', originalUrl: url, isSupported: true };
   }
 
-  // Direct MP3/audio URL
   if (MP3_PATTERN.test(parsed.pathname)) {
     return { platform: 'mp3', originalUrl: url, isSupported: true };
   }
@@ -68,7 +57,7 @@ export function parseMediaURL(rawUrl: string): ParsedURL {
     platform: 'unknown',
     originalUrl: url,
     isSupported: false,
-    error: `Unsupported source. LINKINTEL supports YouTube, Loom, Vimeo, and direct MP4/MP3 URLs.`,
+    error: 'Unsupported source. LINKINTEL supports YouTube, Loom, Vimeo, and direct MP4/MP3 URLs.',
   };
 }
 

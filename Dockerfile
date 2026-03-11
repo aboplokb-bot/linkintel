@@ -19,7 +19,7 @@ WORKDIR /app
 
 # Install Node dependencies
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm ci --only=production
 
 # Copy source
 COPY . .

@@ -1,8 +1,3 @@
-// ============================================================
-// LINKINTEL — Job Processor
-// Orchestrates the full ingestion → transcription → intelligence pipeline
-// ============================================================
-
 import { parseMediaURL } from '@/app/lib/urlParser';
 import { extractAudio } from '@/app/server/audioExtractor';
 import { getTranscriptionProvider } from '@/app/server/transcriptionProvider';
@@ -12,7 +7,6 @@ import { ProcessRequest, ProcessResponse, ProcessResult } from '@/app/types';
 export async function processMediaJob(request: ProcessRequest): Promise<ProcessResponse> {
   const { url, options = {} } = request;
 
-  // Step 1: Parse and validate URL
   const parsed = parseMediaURL(url);
   if (!parsed.isSupported) {
     return { success: false, error: parsed.error || 'Unsupported URL.' };
@@ -21,30 +15,25 @@ export async function processMediaJob(request: ProcessRequest): Promise<ProcessR
   let cleanup: (() => void) | null = null;
 
   try {
-    // Step 2: Extract audio
     const extracted = await extractAudio(parsed);
     cleanup = extracted.cleanup;
 
-    // Step 3: Transcribe
     const provider = getTranscriptionProvider();
     const transcript = await provider.transcribe(extracted.audioPath, {
       language: options.language || 'en',
       timestamps: true,
     });
 
-    // Post-process transcript
     if (options.removeFillersWords) {
-      transcript.fullText = removeFillersWords(transcript.fullText);
+      const fillers = /\b(um|uh|er|ah|like|you know|basically|literally|actually|sort of|kind of)\b,?\s*/gi;
+      transcript.fullText = transcript.fullText.replace(fillers, ' ').replace(/\s+/g, ' ').trim();
       transcript.segments = transcript.segments.map(seg => ({
         ...seg,
-        text: removeFillersWords(seg.text),
+        text: seg.text.replace(fillers, ' ').replace(/\s+/g, ' ').trim(),
       }));
     }
 
-    // Step 4: Generate insights
     const insights = await generateInsights(transcript);
-
-    // Step 5: Generate content assets
     const assets = await generateContentAssets(transcript, extracted.metadata.title);
 
     const result: ProcessResult = {
@@ -62,9 +51,4 @@ export async function processMediaJob(request: ProcessRequest): Promise<ProcessR
   } finally {
     cleanup?.();
   }
-}
-
-function removeFillersWords(text: string): string {
-  const fillers = /\b(um|uh|er|ah|like|you know|basically|literally|actually|sort of|kind of|right\?|okay so|so yeah)\b,?\s*/gi;
-  return text.replace(fillers, ' ').replace(/\s+/g, ' ').trim();
 }

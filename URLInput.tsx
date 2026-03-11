@@ -42,8 +42,7 @@ export default function URLInput({ onSubmit, isLoading }: URLInputProps) {
     const pasted = e.clipboardData.getData('text').trim();
     if (pasted) {
       setTimeout(() => {
-        const p = parseMediaURL(pasted);
-        setParsed(p);
+        setParsed(parseMediaURL(pasted));
         setTouched(true);
       }, 50);
     }
@@ -58,7 +57,7 @@ export default function URLInput({ onSubmit, isLoading }: URLInputProps) {
         <div className="relative">
           <input
             type="text"
-            className={`url-input pr-32 ${isInvalid ? 'border-red-500/50 focus:border-red-500/70' : ''} ${isValid ? 'border-signal/30' : ''}`}
+            className={`url-input pr-32 ${isInvalid ? 'border-red-500/50' : ''} ${isValid ? 'border-signal/30' : ''}`}
             placeholder="Paste YouTube, Loom, Vimeo, or MP4/MP3 URL..."
             value={url}
             onChange={handleChange}
@@ -67,42 +66,25 @@ export default function URLInput({ onSubmit, isLoading }: URLInputProps) {
             autoFocus
             spellCheck={false}
           />
-
-          {/* Platform badge */}
           {isValid && parsed && (
-            <span
-              className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-xs text-signal bg-signal-glow border border-signal/20 px-2 py-0.5 rounded"
-              style={{ fontSize: '0.65rem', letterSpacing: '0.08em' }}
-            >
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-xs text-signal bg-signal-glow border border-signal/20 px-2 py-0.5 rounded"
+              style={{ fontSize: '0.65rem', letterSpacing: '0.08em' }}>
               {getPlatformLabel(parsed.platform).toUpperCase()}
             </span>
           )}
         </div>
-
-        {/* Error message */}
         {isInvalid && parsed?.error && (
           <p className="text-red-400 font-mono text-xs px-1 fade-up">{parsed.error}</p>
         )}
-
-        <button
-          type="submit"
-          className="btn-primary flex items-center justify-center gap-2"
-          disabled={isLoading || (!isValid && touched)}
-        >
+        <button type="submit" className="btn-primary flex items-center justify-center gap-2"
+          disabled={isLoading || (!isValid && touched)}>
           {isLoading ? (
-            <>
-              <span className="spinner" style={{ width: 14, height: 14, borderWidth: 2 }} />
-              Processing...
-            </>
+            <><span className="spinner" style={{ width: 14, height: 14, borderWidth: 2 }} />Processing...</>
           ) : (
-            <>
-              <span>⬡</span>
-              EXTRACT INTELLIGENCE
-            </>
+            <><span>⬡</span>EXTRACT INTELLIGENCE</>
           )}
         </button>
       </div>
-
       <p className="mt-3 font-mono text-xs text-ghost-dim text-center">
         Supports: YouTube · Loom · Vimeo · Direct MP4/MP3
       </p>

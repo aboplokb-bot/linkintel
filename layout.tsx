@@ -3,8 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'LINKINTEL — Paste a link. Get intelligence.',
-  description: 'Paste any video URL. Get transcript, insights, and content assets ready to publish.',
-  keywords: ['transcript', 'AI', 'YouTube', 'content', 'video analysis'],
+  description: 'Paste any video URL. Get transcript, insights, and content assets.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

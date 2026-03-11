@@ -1,8 +1,3 @@
-// ============================================================
-// LINKINTEL — Audio Extractor
-// Uses yt-dlp to pull audio from supported platforms
-// ============================================================
-
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs';
@@ -19,67 +14,38 @@ export interface ExtractedAudio {
   cleanup: () => void;
 }
 
-async function checkYtDlp(): Promise<void> {
-  try {
-    await execAsync('yt-dlp --version');
-  } catch {
-    throw new Error('yt-dlp is not installed. Run: pip install yt-dlp');
-  }
-}
-
 export async function extractAudio(parsed: ParsedURL): Promise<ExtractedAudio> {
-  await checkYtDlp();
-
   const jobId = `linkintel_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   const outputTemplate = path.join(TEMP_DIR, `${jobId}.%(ext)s`);
   const finalPath = path.join(TEMP_DIR, `${jobId}.wav`);
 
-  let metadata: MediaMetadata = {
-    title: 'Untitled',
-    platform: parsed.platform,
-  };
+  let metadata: MediaMetadata = { title: 'Untitled', platform: parsed.platform };
 
   try {
-    // Fetch metadata first
     metadata = await fetchMetadata(parsed);
 
-    // Extract audio based on platform
-    if (parsed.platform === 'mp3') {
-      // Direct audio URL — download and convert
-      await execAsync(
-        `yt-dlp -x --audio-format wav --audio-quality 0 --no-playlist ` +
-        `--max-filesize ${MAX_FILE_SIZE_MB}m ` +
-        `-o "${outputTemplate}" "${parsed.originalUrl}"`
-      );
-    } else {
-      // Video URL — extract audio only
-      await execAsync(
-        `yt-dlp -x --audio-format wav --audio-quality 0 ` +
-        `--no-playlist --no-warnings ` +
-        `--max-filesize ${MAX_FILE_SIZE_MB}m ` +
-        `-o "${outputTemplate}" "${parsed.originalUrl}"`
-      );
-    }
+    await execAsync(
+      `yt-dlp -x --audio-format wav --audio-quality 0 ` +
+      `--no-playlist --no-warnings ` +
+      `--max-filesize ${MAX_FILE_SIZE_MB}m ` +
+      `-o "${outputTemplate}" "${parsed.originalUrl}"`
+    );
 
-    // Find generated file (yt-dlp may rename)
     const generatedPath = findGeneratedFile(jobId);
     if (!generatedPath) throw new Error('Audio extraction failed — no output file found.');
 
-    // Convert to WAV if needed
     let audioPath = generatedPath;
     if (!generatedPath.endsWith('.wav')) {
       await execAsync(`ffmpeg -i "${generatedPath}" -ar 16000 -ac 1 -c:a pcm_s16le "${finalPath}" -y`);
       fs.unlinkSync(generatedPath);
       audioPath = finalPath;
     } else {
-      // Normalize existing WAV
       const normalizedPath = finalPath.replace('.wav', '_norm.wav');
       await execAsync(`ffmpeg -i "${audioPath}" -ar 16000 -ac 1 -c:a pcm_s16le "${normalizedPath}" -y`);
       fs.unlinkSync(audioPath);
       audioPath = normalizedPath;
     }
 
-    // Check file size
     const stats = fs.statSync(audioPath);
     const sizeMB = stats.size / (1024 * 1024);
     if (sizeMB > MAX_FILE_SIZE_MB) {
@@ -93,7 +59,6 @@ export async function extractAudio(parsed: ParsedURL): Promise<ExtractedAudio> {
 
     return { audioPath, metadata, cleanup };
   } catch (error: unknown) {
-    // Cleanup on error
     cleanupJob(jobId);
     const msg = error instanceof Error ? error.message : String(error);
     if (msg.includes('Private video') || msg.includes('Sign in')) {
@@ -103,7 +68,7 @@ export async function extractAudio(parsed: ParsedURL): Promise<ExtractedAudio> {
       throw new Error(`Video is too large. Please use a video under ${MAX_FILE_SIZE_MB}MB.`);
     }
     if (msg.includes('Unsupported URL') || msg.includes('Unable to extract')) {
-      throw new Error('Could not extract audio from this URL. It may be unsupported or the video may be unavailable.');
+      throw new Error('Could not extract audio from this URL. It may be unsupported or unavailable.');
     }
     throw new Error(`Audio extraction failed: ${msg}`);
   }

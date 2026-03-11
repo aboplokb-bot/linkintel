@@ -1,9 +1,4 @@
-// ============================================================
-// LINKINTEL — Export Formatter
-// Converts ProcessResult into TXT, Markdown, SRT
-// ============================================================
-
-import { ProcessResult, TranscriptSegment } from '@/app/types';
+import { ProcessResult } from '@/app/types';
 
 function formatTime(seconds: number): string {
   const h = Math.floor(seconds / 3600);
@@ -22,7 +17,6 @@ function formatSRTTime(seconds: number): string {
 
 export function exportAsTXT(data: ProcessResult): string {
   const lines: string[] = [];
-
   lines.push(`LINKINTEL TRANSCRIPT EXPORT`);
   lines.push(`${'='.repeat(60)}`);
   lines.push(`Title: ${data.metadata.title}`);
@@ -36,32 +30,27 @@ export function exportAsTXT(data: ProcessResult): string {
   lines.push(`${'='.repeat(60)}`);
   lines.push(data.insights.summary);
   lines.push('');
-
   lines.push(`${'='.repeat(60)}`);
   lines.push('KEY POINTS');
   lines.push(`${'='.repeat(60)}`);
   data.insights.keyPoints.forEach((p, i) => lines.push(`${i + 1}. ${p}`));
   lines.push('');
-
   lines.push(`${'='.repeat(60)}`);
   lines.push('ACTION ITEMS');
   lines.push(`${'='.repeat(60)}`);
   data.insights.actionItems.forEach((a, i) => lines.push(`${i + 1}. ${a}`));
   lines.push('');
-
   lines.push(`${'='.repeat(60)}`);
   lines.push('FULL TRANSCRIPT');
   lines.push(`${'='.repeat(60)}`);
   data.transcript.segments.forEach(seg => {
     lines.push(`[${formatTime(seg.start)}] ${seg.text}`);
   });
-
   return lines.join('\n');
 }
 
 export function exportAsMarkdown(data: ProcessResult): string {
   const lines: string[] = [];
-
   lines.push(`# ${data.metadata.title}`);
   lines.push('');
   lines.push(`> **Platform:** ${data.metadata.platform} | **Processed:** ${new Date(data.processedAt).toLocaleDateString()}`);
@@ -70,34 +59,28 @@ export function exportAsMarkdown(data: ProcessResult): string {
   lines.push('');
   lines.push('---');
   lines.push('');
-
   lines.push('## 📋 Summary');
   lines.push('');
   lines.push(data.insights.summary);
   lines.push('');
-
   lines.push('## 💡 Key Points');
   lines.push('');
   data.insights.keyPoints.forEach(p => lines.push(`- ${p}`));
   lines.push('');
-
   lines.push('## ✅ Action Items');
   lines.push('');
   data.insights.actionItems.forEach(a => lines.push(`- [ ] ${a}`));
   lines.push('');
-
   lines.push('---');
   lines.push('');
   lines.push('## 📱 Content Assets');
   lines.push('');
-
   lines.push('### Caption');
   lines.push('');
   lines.push('```');
   lines.push(data.assets.captions);
   lines.push('```');
   lines.push('');
-
   lines.push('### Twitter/X Thread');
   lines.push('');
   data.assets.thread.forEach((tweet, i) => {
@@ -106,7 +89,6 @@ export function exportAsMarkdown(data: ProcessResult): string {
     lines.push(tweet);
     lines.push('');
   });
-
   lines.push('### Carousel Slides');
   lines.push('');
   data.assets.carousel.forEach(slide => {
@@ -114,7 +96,6 @@ export function exportAsMarkdown(data: ProcessResult): string {
     slide.bullets.forEach(b => lines.push(`- ${b}`));
     lines.push('');
   });
-
   lines.push('### Short-Form Script');
   lines.push('');
   lines.push('**[HOOK]**');
@@ -126,7 +107,6 @@ export function exportAsMarkdown(data: ProcessResult): string {
   lines.push('**[CLOSE]**');
   lines.push(data.assets.script.close);
   lines.push('');
-
   lines.push('---');
   lines.push('');
   lines.push('## 🎙 Full Transcript');
@@ -135,7 +115,6 @@ export function exportAsMarkdown(data: ProcessResult): string {
     lines.push(`**\`${formatTime(seg.start)}\`** ${seg.text}`);
     lines.push('');
   });
-
   return lines.join('\n');
 }
 

@@ -1,7 +1,3 @@
-// ============================================================
-// LINKINTEL — Core Types
-// ============================================================
-
 export type SupportedPlatform = 'youtube' | 'loom' | 'vimeo' | 'mp4' | 'mp3' | 'unknown';
 
 export interface ParsedURL {
@@ -14,7 +10,7 @@ export interface ParsedURL {
 
 export interface MediaMetadata {
   title: string;
-  duration?: number; // seconds
+  duration?: number;
   thumbnail?: string;
   platform: SupportedPlatform;
   author?: string;
@@ -22,8 +18,8 @@ export interface MediaMetadata {
 
 export interface TranscriptSegment {
   id: number;
-  start: number; // seconds
-  end: number;   // seconds
+  start: number;
+  end: number;
   text: string;
 }
 
@@ -73,7 +69,7 @@ export type ProcessingStatus =
 
 export interface ProcessingState {
   status: ProcessingStatus;
-  progress: number; // 0-100
+  progress: number;
   message: string;
   error?: string;
 }
@@ -86,7 +82,6 @@ export interface ProcessResult {
   processedAt: string;
 }
 
-// API Request/Response shapes
 export interface ProcessRequest {
   url: string;
   options?: {
@@ -99,7 +94,6 @@ export interface ProcessResponse {
   success: boolean;
   data?: ProcessResult;
   error?: string;
-  jobId?: string;
 }
 
 export interface ExportRequest {
@@ -107,7 +101,6 @@ export interface ExportRequest {
   data: ProcessResult;
 }
 
-// Transcription provider abstraction
 export interface TranscriptionProvider {
   name: string;
   transcribe(audioPath: string, options?: TranscriptionOptions): Promise<TranscriptResult>;

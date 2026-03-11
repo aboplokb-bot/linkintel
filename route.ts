@@ -1,7 +1,3 @@
-// ============================================================
-// LINKINTEL — /api/export route
-// ============================================================
-
 import { NextRequest, NextResponse } from 'next/server';
 import { exportAsTXT, exportAsMarkdown, exportAsSRT } from '@/app/lib/exportFormatter';
 import { ExportRequest } from '@/app/types';

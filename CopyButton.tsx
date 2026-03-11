@@ -16,7 +16,6 @@ export default function CopyButton({ text, label = 'Copy' }: CopyButtonProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback
       const el = document.createElement('textarea');
       el.value = text;
       document.body.appendChild(el);
@@ -29,11 +28,7 @@ export default function CopyButton({ text, label = 'Copy' }: CopyButtonProps) {
   }, [text]);
 
   return (
-    <button
-      onClick={handleCopy}
-      className="btn-ghost"
-      title={`Copy ${label}`}
-    >
+    <button onClick={handleCopy} className="btn-ghost" title={`Copy ${label}`}>
       {copied ? '✓ Copied' : `Copy ${label}`}
     </button>
   );
