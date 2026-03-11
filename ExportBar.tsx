@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ProcessResult } from '@/app/types';
+import { ProcessResult } from '../types';
 
 interface ExportBarProps {
   data: ProcessResult;
