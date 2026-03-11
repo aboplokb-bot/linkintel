@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ProcessResult } from '../types/index';
+import type { ProcessResult } from '../types';
 
 interface ExportBarProps {
   data: ProcessResult;
@@ -13,6 +13,8 @@ export default function ExportBar({ data }: ExportBarProps) {
   const [exporting, setExporting] = useState<ExportFormat | null>(null);
 
   const handleExport = async (format: ExportFormat) => {
+    setExporting(format);
+
     try {
       const response = await fetch('/api/export', {
         method: 'POST',
@@ -23,10 +25,14 @@ export default function ExportBar({ data }: ExportBarProps) {
       if (!response.ok) throw new Error('Export failed');
 
       const blob = await response.blob();
-      const filename = (data?.metadata?.title ?? "Untitled")
-  .toString()
-  .replace(/[^a-z0-9]/gi, '_')
-  .slice(0, 60);
+
+      const filename = 'Untitled'
+        .toString()
+        .trim()
+        .replace(/[^a-z0-9]+/gi, '_')
+        .replace(/^_+|_+$/g, '')
+        .slice(0, 60);
+
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -52,7 +58,7 @@ export default function ExportBar({ data }: ExportBarProps) {
     <div className="card p-4 flex flex-col gap-3">
       <div className="section-label">EXPORT</div>
       <div className="flex flex-wrap gap-2">
-        {formats.map(f => (
+        {formats.map((f) => (
           <button
             key={f.id}
             onClick={() => handleExport(f.id)}
